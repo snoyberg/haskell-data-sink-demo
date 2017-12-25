@@ -6,9 +6,15 @@
 feedback-loop:
 	@stack install :haskell-data-sink-demo --file-watch --exec='haskell-data-sink-demo'
 
+## Run our web-service
+run:
+	@haskell-data-sink-demo
+
 ## Use curl to send JSON POST to test
 post-msg:
-	@echo "empty curl, response:"
+	@echo "curl status:"
+	@curl localhost:2378/status
+	@echo "\n\nempty curl, response:"
 	@curl localhost:2378
 	@echo "\n\ninvalid JSON, response:"
 	@curl -i -H "Content-Type: application/json" -X POST -d '{"id": "username":"xyz","password":"xyz"}' localhost:2378
