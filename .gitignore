@@ -1,3 +1,4 @@
 .stack-work/
 haskell-data-sink-demo.cabal
 *~
+*.sw[p,o]
