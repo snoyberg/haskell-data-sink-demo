@@ -30,6 +30,7 @@ dependencies:
   - http-types
   - lifted-base
   - network
+  - text
   - wai
   - wai-conduit
   - warp
