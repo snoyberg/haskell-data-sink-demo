@@ -1,11 +1,34 @@
-{-# LANGUAGE OverloadedStrings #-}
-import           Control.Concurrent       (threadDelay)
-import           Control.Monad            (forever)
-import           Control.Monad.IO.Class
-import           Data.Aeson               (encode, ToJSON)
-import           Data.Aeson.Parser        (json)
-import           Data.ByteString.Lazy     (toStrict)
-import           Database.Redis
+{-# LANGUAGE EmptyDataDecls             #-}
+{-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
+import           Control.Concurrent          (threadDelay)
+import           Control.Monad               (forever)
+import           Control.Monad.IO.Class      (liftIO)
+import           Data.Aeson                  (encode, ToJSON)
+import           Data.Aeson.Parser           (json)
+import           Data.ByteString.Lazy        (toStrict)
+import           Data.Text
+import           Data.Time.Clock             (UTCTime)
+import           Database.Persist.Postgresql (ConnectionString, insert, withPostgresqlConn)
+import           Database.Persist.TH         (mkPersist, mkMigrate, persistLowerCase, share, sqlSettings)
+import           Database.Redis              (connect, defaultConnectInfo, lrem, rpoplpush, runRedis)
+
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Message json
+  content Text
+  created UTCTime default=now()
+  deriving Show
+ |]
+
+--f :: Text
+--f = "foobar"
 
 main :: IO ()
 main = do
@@ -28,7 +51,15 @@ main = do
                          liftIO $ print bs
                          -- we're done processing, drop the msg
                          r <- lrem "processing" 1 bs
-                         -- print the number of rows removed
-                         liftIO $ print r
+                         liftIO $ print "Completed processing msg"
     -- pause for 250 ms
     liftIO $ threadDelay 250000
+
+defaultDbInfo :: ConnectionString
+defaultDbInfo = "host=localhost port=5432 user=postgres dbname=test password=test"
+
+writeMessage :: Message -> IO ()
+writeMessage msg = withPostgresqlConn defaultDbInfo $ do
+                     msgId <- insert $ msg
+                     liftIO $ print "wrote msg to postgres!"
+

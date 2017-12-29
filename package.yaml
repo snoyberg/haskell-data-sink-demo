@@ -31,7 +31,10 @@ dependencies:
   - http-types
   - lifted-base
   - network
+  - persistent-postgresql
+  - persistent-template
   - text
+  - time
   - wai
   - wai-conduit
   - warp
