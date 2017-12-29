@@ -30,12 +30,11 @@ app req sendResponse = handle (sendResponse . invalidJson) $ do
     case pathInfo req of
       [] -> do
         value <- sourceRequestBody req $$ sinkParser json
-        newValue <- liftIO $ modValue value
         runRedis rconn $ lpush "enqueued" $ [toStrict $ encode value]
         sendResponse $ responseLBS
             status200
             [("Content-Type", "application/json")]
-            $ encode newValue
+            $ encode value
       ["status"] -> do
         sendResponse $ responseLBS
             status200 --[] "status: online"
