@@ -16,7 +16,7 @@ run-sink:
 
 ## Use docker to run redis
 run-redis:
-	@docker run --net=host -p 127.0.0.1:6379:6379 redis
+	@docker run --rm --name=redis --net=host -p 127.0.0.1:6379:6379 redis
 
 ## Use curl to send JSON POST to test
 post-msg:
@@ -31,7 +31,7 @@ post-msg:
 
 ## Use redis-cli to check the length of the enqueued table
 enqueued-length:
-	@docker exec -it mad_pike redis-cli LLEN enqueued
+	@docker exec -it redis redis-cli LLEN enqueued
 
 ## Show help screen.
 help:
