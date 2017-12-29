@@ -6,6 +6,7 @@ import           Control.Monad.IO.Class   (liftIO)
 import           Data.Aeson               (Value, encode, object, (.=), FromJSON, ToJSON)
 import           Data.Aeson.Parser        (json)
 import           Data.ByteString          (ByteString)
+import           Data.ByteString.Lazy     (toStrict)
 import           Data.Conduit             (($$))
 import           Data.Conduit.Attoparsec  (sinkParser)
 import           Data.Text
@@ -30,7 +31,7 @@ app req sendResponse = handle (sendResponse . invalidJson) $ do
       [] -> do
         value <- sourceRequestBody req $$ sinkParser json
         newValue <- liftIO $ modValue value
-        runRedis rconn $ lpush "enqueued" value
+        runRedis rconn $ lpush "enqueued" $ [toStrict $ encode value]
         sendResponse $ responseLBS
             status200
             [("Content-Type", "application/json")]
