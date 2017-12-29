@@ -27,6 +27,7 @@ main = run 2378 app
 
 app :: Application
 app req sendResponse = handle (sendResponse . invalidJson) $ do
+    rconn <- connect defaultConnectInfo
     case pathInfo req of
       [] -> do
         value <- sourceRequestBody req $$ sinkParser json
@@ -43,8 +44,6 @@ app req sendResponse = handle (sendResponse . invalidJson) $ do
       _ -> do
         sendResponse $ responseLBS
             status200 [] "hello world!"
-    where
-      rconn = connect defaultConnectInfo
 
 invalidJson :: SomeException -> Response
 invalidJson ex = responseLBS
