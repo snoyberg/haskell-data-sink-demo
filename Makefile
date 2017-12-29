@@ -13,6 +13,7 @@ run:
 ## Use docker to run redis
 run-redis:
 	@docker run --net=host -p 127.0.0.1:6379:6379 redis
+
 ## Use curl to send JSON POST to test
 post-msg:
 	@echo "curl status:"
@@ -23,6 +24,10 @@ post-msg:
 	@curl -i -H "Content-Type: application/json" -X POST -d '{"id": "username":"xyz","password":"xyz"}' localhost:2378
 	@echo "\n\nvalid JSON, response:"
 	@curl -i -H "Content-Type: application/json" -X POST -d '{"id": 1, "username":"xyz","password":"xyz"}' localhost:2378
+
+## Use redis-cli to check the length of the enqueued table
+enqueued-length:
+	@docker exec -it mad_pike redis-cli LLEN enqueued
 
 ## Show help screen.
 help:
