@@ -9,6 +9,7 @@ import           Data.ByteString          (ByteString)
 import           Data.Conduit             (($$))
 import           Data.Conduit.Attoparsec  (sinkParser)
 import           Data.Text
+import           Database.Redis
 import           GHC.Generics
 import           Network.HTTP.Types       (status200, status400)
 import           Network.Wai              (Application, Response, responseLBS, pathInfo)
@@ -29,6 +30,7 @@ app req sendResponse = handle (sendResponse . invalidJson) $ do
       [] -> do
         value <- sourceRequestBody req $$ sinkParser json
         newValue <- liftIO $ modValue value
+        runRedis rconn $ lpush "enqueued" value
         sendResponse $ responseLBS
             status200
             [("Content-Type", "application/json")]
@@ -41,6 +43,8 @@ app req sendResponse = handle (sendResponse . invalidJson) $ do
       _ -> do
         sendResponse $ responseLBS
             status200 [] "hello world!"
+    where
+      rconn = connect defaultConnectInfo
 
 invalidJson :: SomeException -> Response
 invalidJson ex = responseLBS

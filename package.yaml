@@ -27,6 +27,7 @@ dependencies:
   - bytestring
   - conduit
   - conduit-extra
+  - hedis
   - http-types
   - lifted-base
   - network
