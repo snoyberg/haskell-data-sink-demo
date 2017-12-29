@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Control.Monad.IO.Class
-import           Data.Aeson               (Value, encode, object, (.=), FromJSON, ToJSON)
+import           Data.Aeson               (encode, ToJSON)
 import           Data.Aeson.Parser        (json)
 import           Data.ByteString.Lazy     (toStrict)
 import           Database.Redis
