@@ -33,6 +33,11 @@ post-msg:
 enqueued-length:
 	@docker exec -it redis redis-cli LLEN enqueued
 
+## Use redis-cli to check the length of the processing table
+processing-length:
+	@docker exec -it redis redis-cli LLEN processing
+
+
 ## Show help screen.
 help:
 	@echo "Please use \`make <target>' where <target> is one of\n\n"
