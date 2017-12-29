@@ -10,6 +10,9 @@ feedback-loop:
 run:
 	@haskell-data-sink-demo
 
+## Use docker to run redis
+run-redis:
+	@docker run --net=host -p 127.0.0.1:6379:6379 redis
 ## Use curl to send JSON POST to test
 post-msg:
 	@echo "curl status:"
