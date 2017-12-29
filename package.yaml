@@ -41,9 +41,19 @@ library:
   source-dirs: src
 
 executables:
-  haskell-data-sink-demo:
+  demo-web-service:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         demo-web-service
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - haskell-data-sink-demo
+
+  demo-sink:
+    main:                Main.hs
+    source-dirs:         demo-sink
     ghc-options:
       - -threaded
       - -rtsopts

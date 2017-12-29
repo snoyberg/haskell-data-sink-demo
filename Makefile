@@ -2,13 +2,17 @@
 
 .DEFAULT_GOAL = help
 
-## Use stack to continuously rebuild/run the executable as the source changes
-feedback-loop:
-	@stack install :haskell-data-sink-demo --file-watch --exec='haskell-data-sink-demo'
+## Use stack to continuously rebuild/run the demo web service
+feedback-loop-web-service:
+	@stack install :demo-sink :demo-web-service --file-watch --exec='demo-web-service'
 
 ## Run our web-service
-run:
-	@haskell-data-sink-demo
+run-web-service:
+	@demo-web-service
+
+## Run our demo data processing sink
+run-sink:
+	@demo-sink
 
 ## Use docker to run redis
 run-redis:
