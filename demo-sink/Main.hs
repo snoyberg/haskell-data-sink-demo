@@ -11,6 +11,9 @@ main = do
   runRedis rconn $ do
     msg <- rpoplpush "enqueued" "processing"
     case msg of
-      Right (Just bs) -> liftIO $ print bs --lrem "processing" 1 bs
-      Right Nothing   -> liftIO $ print "ERROR!"
-      Left        x   -> liftIO $ print "ERROR!"
+      Left  e         -> liftIO $ putStrLn $ "ERROR!" ++ show e
+      Right (Just bs) -> do
+                         liftIO $ print bs
+                         r <- lrem "processing" 1 bs
+                         liftIO $ print r
+      Right Nothing   -> liftIO $ putStrLn $ "ERROR!" ++ show msg
