@@ -30,6 +30,8 @@ dependencies:
   - hedis
   - http-types
   - lifted-base
+  - monad-control
+  - monad-logger
   - network
   - persistent-postgresql
   - persistent-template

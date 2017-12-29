@@ -10,13 +10,15 @@
 {-# LANGUAGE TypeFamilies               #-}
 import           Control.Concurrent          (threadDelay)
 import           Control.Monad               (forever)
-import           Control.Monad.IO.Class      (liftIO)
+import           Control.Monad.IO.Class      (liftIO, MonadIO)
+import           Control.Monad.Logger        (logDebugN, MonadLogger)
+import           Control.Monad.Trans.Control (MonadBaseControl)
 import           Data.Aeson                  (encode, ToJSON)
 import           Data.Aeson.Parser           (json)
 import           Data.ByteString.Lazy        (toStrict)
 import           Data.Text
 import           Data.Time.Clock             (UTCTime)
-import           Database.Persist.Postgresql (ConnectionString, insert, withPostgresqlConn)
+import           Database.Persist.Postgresql (ConnectionString, insert, PersistEntity, PersistEntityBackend, SqlBackend, withPostgresqlConn, withPostgresqlPool)
 import           Database.Persist.TH         (mkPersist, mkMigrate, persistLowerCase, share, sqlSettings)
 import           Database.Redis              (connect, defaultConnectInfo, lrem, rpoplpush, runRedis)
 
@@ -58,8 +60,18 @@ main = do
 defaultDbInfo :: ConnectionString
 defaultDbInfo = "host=localhost port=5432 user=postgres dbname=test password=test"
 
-writeMessage :: Message -> IO ()
-writeMessage msg = withPostgresqlConn defaultDbInfo $ do
-                     msgId <- insert $ msg
-                     liftIO $ print "wrote msg to postgres!"
+--
+writeMessage ::
+     ( PersistEntityBackend record ~ SqlBackend
+     , MonadIO m
+     , MonadBaseControl IO m
+     , MonadLogger m
+     , PersistEntity record
+     )
+  => record
+  -> m ()
+--writeMessage msg = withPostgresqlPool defaultDbInfo 10 $ \ conn -> do
+writeMessage msg = withPostgresqlConn defaultDbInfo $ \ conn -> do
+                     msgId <- runStdoutLoggingT (insert msg) (conn :: SqlBackend)
+                     logDebugN "wrote msg to postgres!"
 
