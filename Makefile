@@ -3,8 +3,8 @@
 .DEFAULT_GOAL = help
 
 ## Use stack to continuously rebuild/run the demo web service
-feedback-loop-web-service:
-	@stack install :demo-sink :demo-web-service --file-watch --exec='demo-web-service'
+feedback-loop:
+	@stack install :demo-sink :demo-web-service --file-watch --exec='./run-demo.sh'
 
 ## Run our web-service
 run-web-service:
