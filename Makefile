@@ -2,6 +2,10 @@
 
 .DEFAULT_GOAL = help
 
+## Install libpq-dev
+install-libpq:
+	@sudo apt-get install libpq-dev
+
 ## Use stack to continuously rebuild/run the demo web service
 feedback-loop:
 	@stack install :demo-sink :demo-web-service --file-watch --exec='./run-demo.sh'
